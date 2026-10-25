@@ -1,69 +1,147 @@
+import React, { Suspense } from "react";
 import Image from "next/image";
+import { ArrowRightIcon } from "lucide-react";
 
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { HeroSearch } from "@/components/hero-search";
+import { WhyChooseSection } from "@/components/why-choose-section";
+import { TestimonialsSection } from "@/components/testimonials-section";
+import { CtaSection } from "@/components/cta-section";
+import {
+  FeaturedDestinations,
+  type FeaturedDestinationItem,
+} from "@/components/featured-destinations";
+
+
+type BackendDestination = {
+  _id?: string;
+  id?: string;
+  // Newer backend records:
+  destinationName?: string;
+  image?: string;
+  // Older backend records:
+  name?: string;
+  imageUrl?: string;
+  country?: string;
+  category?: string;
+  price?: number | string;
+  duration?: string;
+};
+
+const BACKEND_URL = "http://localhost:5000";
+
+async function getFeatured(): Promise<FeaturedDestinationItem[] | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/destinations`);
+    if (!res.ok) return null;
+    const raw = (await res.json()) as BackendDestination[];
+
+    // Featured picks: only sane, presentable records — a real name, an image
+    // and a positive price (older test junk records like "??????" excluded).
+    const featured = raw
+      .filter(
+        (item) =>
+          /[a-zA-Z]/.test(item.destinationName ?? item.name ?? "") &&
+          Boolean(item.image || item.imageUrl) &&
+          Number(item.price ?? 0) > 0,
+      )
+      .slice(0, 12)
+      .map<FeaturedDestinationItem>((item) => ({
+        id: String(item._id ?? item.id ?? ""),
+        name: (item.destinationName ?? item.name ?? "").trim(),
+        location: item.country ?? "",
+        price: Number(item.price ?? 0),
+        duration: item.duration,
+        imageUrl: (item.image ?? (item.imageUrl || ""))
+          .replace(/w=\d+/, "w=800"),
+      }));
+
+    return featured;
+  } catch {
+    // Backend down — homepage stays silent instead of showing an error banner.
+    return null;
+  }
+}
+
+async function FeaturedSectionData() {
+  const featured = await getFeatured();
+  if (!featured || featured.length === 0) return null;
+  return <FeaturedDestinations destinations={featured} />;
+}
+
+function FeaturedFallback() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <section className="bg-background px-4 py-16 sm:px-6 sm:py-20">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="h-10 w-72 animate-pulse rounded-md bg-muted" />
+            <div className="mt-3 h-4 w-56 animate-pulse rounded bg-muted" />
+          </div>
+          <div className="h-11 w-44 animate-pulse rounded-md bg-muted" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          <div className="aspect-video w-full animate-pulse rounded-md bg-muted" />
+          <div className="aspect-video w-full animate-pulse rounded-md bg-muted max-md:hidden" />
+          <div className="aspect-video w-full animate-pulse rounded-md bg-muted max-lg:hidden" />
         </div>
+      </div>
+    </section>
+  );
+}
+
+export default function HomePage() {  return (
+    <>
+      <main className="relative isolate flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center px-4 pt-24 pb-36 text-center text-white sm:py-24">
+      <Image
+        src="/images/Banner.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="-z-10 object-cover"
+      />
+
+      <div className="max-w-3xl">
+        <h1 className="font-heading text-4xl leading-tight font-medium text-balance sm:text-6xl lg:text-7xl">
+          Discover Your Next Adventure
+        </h1>
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/90">
+          Explore breathtaking destinations and create unforgettable memories
+          with our curated travel experiences.
+        </p>
+
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+          <Button
+            size="lg"
+            className="h-12 gap-2.5 rounded-md bg-brand px-8 text-sm font-semibold tracking-widest text-white uppercase hover:bg-brand/90"
+          >
+            Explore Now
+            <ArrowRightIcon />
+          </Button>
+          <Button
+            size="lg"
+            variant="ghost"
+            className="h-12 rounded-md border border-white/30 bg-white/30 px-8 text-sm font-semibold tracking-widest text-white uppercase backdrop-blur-sm hover:bg-white/40 hover:text-white dark:border-white/30 dark:bg-white/30 dark:text-white dark:hover:bg-white/40"
+          >
+            View Destination
+          </Button>
+        </div>
+      </div>
+
+      <HeroSearch />
       </main>
-    </div>
+
+      {/* Featured destinations — real backend data, streamed in */}
+      <Suspense fallback={<FeaturedFallback />}>
+        <FeaturedSectionData />
+      </Suspense>
+
+      <WhyChooseSection />
+
+      <TestimonialsSection />
+
+      <CtaSection />
+    </>
   );
 }
