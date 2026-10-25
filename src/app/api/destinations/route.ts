@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 // Admin-only proxy for destination CREATE.
 // The browser can't call the backend directly with the auth cookie
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   const cookie = (await headers()).get("cookie") ?? "";
-  const res = await fetch("http://localhost:5000/add-destination", {
+  const res = await fetch(`${BACKEND_URL}/add-destination`, {
     method: "POST",
     headers: { "Content-Type": "application/json", cookie },
     body: JSON.stringify(body),

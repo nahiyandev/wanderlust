@@ -2,11 +2,10 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 // Booking cancel proxy — forwards to the sibling backend's
 // DELETE /bookings/:id (ownership enforced there, cookie forwarded here).
-const BACKEND_URL = "http://localhost:5000";
-
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },

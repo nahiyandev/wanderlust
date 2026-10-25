@@ -99,7 +99,7 @@ export default function AddDestinationPage() {
       setCategory("Beach");
     } catch {
       setError(
-        "Could not save the package — is the backend running on http://localhost:5000?",
+        "Could not save the package — please check the backend connection.",
       );
     } finally {
       setSubmitting(false);

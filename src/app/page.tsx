@@ -11,6 +11,7 @@ import {
   FeaturedDestinations,
   type FeaturedDestinationItem,
 } from "@/components/featured-destinations";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 
 type BackendDestination = {
@@ -27,8 +28,6 @@ type BackendDestination = {
   price?: number | string;
   duration?: string;
 };
-
-const BACKEND_URL = "http://localhost:5000";
 
 async function getFeatured(): Promise<FeaturedDestinationItem[] | null> {
   try {

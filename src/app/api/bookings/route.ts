@@ -2,14 +2,13 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 // Thin proxies in front of the sibling backend's /bookings routes.
 // Browsers don't attach the better-auth cookie to cross-port (:5000)
 // requests, so the client calls THIS same-origin route; the session is
 // checked here, the cookie is forwarded, and the backend's requireAuth
 // guard re-validates it against GET /api/auth/get-session.
-
-const BACKEND_URL = "http://localhost:5000";
 
 type RawBookingDoc = {
   _id?: unknown;

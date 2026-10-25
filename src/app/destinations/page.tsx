@@ -4,6 +4,7 @@ import {
   DestinationsGrid,
   type DestinationItem,
 } from "@/components/destinations-grid";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 // Covers both backend record shapes (older: name/imageUrl, newer:
 // destinationName/image).
@@ -37,8 +38,7 @@ async function DestinationsList() {
   let fetchFailed = false;
 
   try {
-    // Backend API: wanderlust backend running on :5000
-    const res = await fetch("http://localhost:5000/destinations");
+    const res = await fetch(`${BACKEND_URL}/destinations`);
     if (res.ok) {
       const raw = (await res.json()) as BackendListItem[];
       destinations = raw.map(mapDestinationItem);
@@ -52,8 +52,7 @@ async function DestinationsList() {
   if (fetchFailed) {
     return (
       <div className="mt-8 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm">
-        Could not load destinations — is the backend running on
-        localhost:5000?
+        Could not load destinations — please check the backend connection.
       </div>
     );
   }

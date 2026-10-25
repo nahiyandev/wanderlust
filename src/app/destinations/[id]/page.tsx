@@ -13,6 +13,7 @@ import {
 import { UpdatePackageDialog } from "@/components/update-package-dialog";
 import { DeleteDestinationButton } from "@/components/delete-destination-button";
 import { BookNowButton } from "@/components/book-now-button";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 // Internal shape used by the UI — mapped from the backend response below
 // (backend keys: destinationName, country, image, description, ...).
@@ -93,8 +94,7 @@ async function DestinationContent({
 }) {
   const { id } = await params;
 
-  // Backend API: wanderlust backend running on :5000
-  const res = await fetch(`http://localhost:5000/destinations/${id}`);
+  const res = await fetch(`${BACKEND_URL}/destinations/${id}`);
   if (!res.ok) notFound();
   const raw = (await res.json()) as BackendDestination;
   const data = mapDestination(raw);

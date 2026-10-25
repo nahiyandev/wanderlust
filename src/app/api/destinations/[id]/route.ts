@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 // Admin-only proxy for destination UPDATE + DELETE on the sibling backend.
 // Forwards the session cookie so the backend's requireAdmin guard passes.
@@ -25,7 +26,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const { id } = await context.params;
   const body = await request.json();
-  const res = await fetch(`http://localhost:5000/destinations/${id}`, {
+  const res = await fetch(`${BACKEND_URL}/destinations/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", cookie },
     body: JSON.stringify(body),
@@ -39,7 +40,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
   if (error || !cookie) return error!;
 
   const { id } = await context.params;
-  const res = await fetch(`http://localhost:5000/destinations/${id}`, {
+  const res = await fetch(`${BACKEND_URL}/destinations/${id}`, {
     method: "DELETE",
     headers: { cookie },
   });
