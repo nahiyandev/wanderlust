@@ -4,6 +4,7 @@
   <h1>Wanderlust</h1>
   <p><strong>Find your next escape. Make the journey unforgettable.</strong></p>
   <p>A travel discovery and booking experience for exploring hand-picked destinations.</p>
+  <p><a href="https://wanderlust-sigma-wine.vercel.app/">Visit the live site ↗</a></p>
 
   <p>
     <img src="https://img.shields.io/badge/Next.js-16-111111?logo=next.js&logoColor=white" alt="Next.js 16" />
